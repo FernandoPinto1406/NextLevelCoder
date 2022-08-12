@@ -1,10 +1,12 @@
 import pygame
+from dino_runner.components.get_message import get_message
 from dino_runner.components.dinosaur import Dinosaur
 from dino_runner.components.obstacles.obstacle_manager import ObstacleManager
+from dino_runner.components.power_ups.power_up_manager import PowerUpManager
 
 from dino_runner.utils.constants import BG, ICON, RUNNING, SCREEN_HEIGHT, SCREEN_WIDTH, TITLE, FPS
 
-FONT_STYLE = 'freesansbold.ttf'
+
 
 class Game:
     def __init__(self):
@@ -15,6 +17,7 @@ class Game:
         self.clock = pygame.time.Clock()
         self.player = Dinosaur()
         self.obstacle_manager = ObstacleManager()
+        self.power_up_manager = PowerUpManager()
         self.playing = False
         self.running = False
         self.game_speed = 20
@@ -31,11 +34,16 @@ class Game:
         while self.running:
             if not self.playing:
                 self.show_menu()
+        
+        pygame.display.quit()
+        pygame.quit()
 
     def run(self):
         # Game loop: events - update - draw
         self.obstacle_manager.reset_obstacles()
+        self.power_up_manager.reset_power_ups()
         self.playing = True
+        self.game_speed = 20
         while self.playing:
             self.events()
             self.update()
@@ -53,6 +61,7 @@ class Game:
         user_input = pygame.key.get_pressed()
         self.player.update(user_input)
         self.obstacle_manager.update(self)
+        self.power_up_manager.update(self.points, self.game_speed, self.player)
        
     def update_score(self):
         self.points += 1
@@ -66,7 +75,9 @@ class Game:
         self.draw_background()
         self.draw_score()
         self.player.draw(self.screen)
+        self.player.check_invincibility(self.screen)       
         self.obstacle_manager.draw(self.screen)
+        self.power_up_manager.draw(self.screen)
         pygame.display.update()
         pygame.display.flip()
 
@@ -80,7 +91,7 @@ class Game:
         self.x_pos_bg -= self.game_speed
 
     def draw_score(self):
-        message(
+        get_message(
             screen = self.screen,
             screen_width = 1000,
             screen_height = 50,
@@ -103,27 +114,27 @@ class Game:
         half_screen_width = SCREEN_WIDTH // 2
 
         if self.death_count == 0:
-          message(
+          get_message(
             screen = self.screen,
             screen_width = half_screen_width, 
             screen_height = half_screen_height,
             what_message=("Press any key to start"),
             size = 30)
         elif self.death_count > 0:
-          message(
+          get_message(
             screen = self.screen,
             screen_width = half_screen_width, 
             screen_height = half_screen_height,
             what_message=("Press any key to Restart"),
             size = 30)
-          message(
+          get_message(
             screen = self.screen,
             screen_width = half_screen_width, 
             screen_height = half_screen_height + 50,
             what_message=(f"Your  score: {self.points}"),
             size = 25)
           
-          message(
+          get_message(
             screen = self.screen,
             screen_width = half_screen_width, 
             screen_height = half_screen_height + 80,
@@ -134,9 +145,3 @@ class Game:
         pygame.display.update()
         self.handle_key_events_on_menu()
 
-def message(screen, screen_width, screen_height, what_message = str, size = int):
-    font = pygame.font.Font(FONT_STYLE, size)
-    text = font.render(what_message, True, (0,0,0))
-    text_rect = text.get_rect()
-    text_rect.center = (screen_width, screen_height)
-    screen.blit(text, text_rect)
