@@ -1,10 +1,14 @@
+from winsound import PlaySound
 import pygame
+pygame.mixer.init()
+
 from dino_runner.components.get_message import get_message
+
 from dino_runner.components.dinosaur import Dinosaur
 from dino_runner.components.obstacles.obstacle_manager import ObstacleManager
 from dino_runner.components.power_ups.power_up_manager import PowerUpManager
 
-from dino_runner.utils.constants import BG, ICON, RUNNING, SCREEN_HEIGHT, SCREEN_WIDTH, TITLE, FPS
+from dino_runner.utils.constants import BG, DIE_SOUND, DINO_START, ICON, POINT_SOUND, RUNNING, SCREEN_HEIGHT, SCREEN_WIDTH, TITLE, FPS
 
 
 
@@ -23,6 +27,7 @@ class Game:
         self.game_speed = 20
         self.x_pos_bg = 0
         self.y_pos_bg = 380
+        self.set_sound_score()
 
 
         self.points = 0 
@@ -66,8 +71,12 @@ class Game:
     def update_score(self):
         self.points += 1
         if self.points % 100 == 0:
+            self.sound.play()
             self.game_speed +=1
-        
+
+    def set_sound_score(self):
+         self.sound = pygame.mixer.Sound(POINT_SOUND)
+
 
     def draw(self):
         self.clock.tick(FPS)
@@ -80,6 +89,7 @@ class Game:
         self.power_up_manager.draw(self.screen)
         pygame.display.update()
         pygame.display.flip()
+        
 
     def draw_background(self):
         image_width = BG.get_width()
@@ -117,31 +127,32 @@ class Game:
           get_message(
             screen = self.screen,
             screen_width = half_screen_width, 
-            screen_height = half_screen_height,
+            screen_height = half_screen_height + 110,
             what_message=("Press any key to start"),
             size = 30)
         elif self.death_count > 0:
           get_message(
             screen = self.screen,
             screen_width = half_screen_width, 
-            screen_height = half_screen_height,
+            screen_height = half_screen_height + 90,
             what_message=("Press any key to Restart"),
-            size = 30)
+            size = 35)
           get_message(
             screen = self.screen,
             screen_width = half_screen_width, 
-            screen_height = half_screen_height + 50,
+            screen_height = half_screen_height + 150,
             what_message=(f"Your  score: {self.points}"),
             size = 25)
           
           get_message(
             screen = self.screen,
             screen_width = half_screen_width, 
-            screen_height = half_screen_height + 80,
+            screen_height = half_screen_height + 180,
             what_message=(f"Your  number of tries: {self.death_count}"),
             size = 25)            
-        self.screen.blit(RUNNING[0], (half_screen_width - 20, half_screen_height - 140))
+        self.screen.blit(DINO_START, (half_screen_width - 250, half_screen_height - 150))
         
         pygame.display.update()
         self.handle_key_events_on_menu()
 
+  

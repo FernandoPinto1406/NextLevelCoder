@@ -1,6 +1,7 @@
 import pygame
-from .game import get_message
-from dino_runner.utils.constants import DEFAULT_TYPE, DUCKING_HAMMER, DUCKING_SHIELD, HAMMER_TYPE, JUMPING_HAMMER, JUMPING_SHIELD, RUNNING, JUMPING, DUCKING, RUNNING_HAMMER, RUNNING_SHIELD, SHIELD_TYPE
+pygame.mixer.init()
+from dino_runner.components.get_message import get_message
+from dino_runner.utils.constants import DEFAULT_TYPE, DINO_DEAD, DUCKING_HAMMER, DUCKING_SHIELD, HAMMER_TYPE, JUMP_SOUND, JUMPING_HAMMER, JUMPING_SHIELD, RUNNING, JUMPING, DUCKING, RUNNING_HAMMER, RUNNING_SHIELD, SHIELD_TYPE
 from pygame.sprite import Sprite
 
 DUCK_IMG = {DEFAULT_TYPE:  DUCKING, SHIELD_TYPE: DUCKING_SHIELD, HAMMER_TYPE: DUCKING_HAMMER}
@@ -25,7 +26,8 @@ class Dinosaur(Sprite):
         self.dino_duck = False
         self.jump_vel = self.JUMP_VEL
         self.setup_state()
-        
+        self.set_sound()
+
     def setup_state(self):
         self.has_power_up = False
         self.shield = False
@@ -45,6 +47,7 @@ class Dinosaur(Sprite):
 
         if user_input[pygame.K_UP] and not self.dino_jump:
             self.dino_jump = True
+            self.sound.play()
             self.dino_run = False
             self.dino_duck = False
         elif user_input[pygame.K_DOWN] and not self.dino_jump:
@@ -76,7 +79,7 @@ class Dinosaur(Sprite):
             self.dino_rect.y = self.Y_POS
             self.dino_jump = False
             self.jump_vel = self.JUMP_VEL
-
+        
     def duck(self):
         self.image = DUCK_IMG[self.type][self.step_index // 5]
         self.dino_rect = self.image.get_rect()
@@ -112,3 +115,8 @@ class Dinosaur(Sprite):
                 
     def draw(self, screen: pygame.Surface):
         screen.blit(self.image, (self.dino_rect.x, self.dino_rect.y))
+
+    def set_sound(self):
+        self.sound = pygame.mixer.Sound(JUMP_SOUND)
+    
+

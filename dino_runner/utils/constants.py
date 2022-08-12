@@ -73,3 +73,12 @@ DEFAULT_TYPE = "default"
 SHIELD_TYPE = "shield"
 HAMMER_TYPE = "hammer"
 CLOUD_TYPE = "cloud"
+
+JUMP_SOUND = os.path.join(IMG_DIR, 'sounds/jump.wav')
+DIE_SOUND = os.path.join(IMG_DIR, 'sounds/die.wav')
+POINT_SOUND = os.path.join(IMG_DIR, 'sounds/point.wav')
+
+DINO_START = pygame.image.load(os.path.join(IMG_DIR, 'Other/logo.png'))
+DINO_DEAD = pygame.image.load(os.path.join(IMG_DIR, 'Dino/DinoDead.png'))
+
+ULTRA_POWER_SOUND = os.path.join(IMG_DIR, 'sounds/nggyu.wav')
